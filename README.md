@@ -1,23 +1,23 @@
-# R-Markdown-project
-The data used come from http://www.worldatlas.com/articles/most-dangerous-cities-in-the-united-states.html
+The data for this map is taken from the Sacramento Crime January 2006 dataset which contains 7,584 crime records as made available by the Sacramento Police Department. The same is available here: http://samplecsvs.s3.amazonaws.com/SacramentocrimeJanuary2006.csv 
 
-This show the most Dangerous Cities In The United States
+## Reading Data
 
-setwd("C:/Users/olivier.detandt/Documents/Doc/DataScience/Product Development")
-data<-read.csv("Map.csv",sep=";")
+Reading data from the given url and subsetting to extract 800 random samples out of the 7000+ records.  
 
+```{r, echo=TRUE, results=FALSE}
+data <- "http://samplecsvs.s3.amazonaws.com/SacramentocrimeJanuary2006.csv"
+df <- read.csv(url(data))
+df <- df[sample(nrow(df), 800), c(8,9)]
+```
+ 
+
+## Plotting Map
+
+The map below shows a clustered view of all the spots where crimes were recorded by the Sacremento Police Department in 2006. 
+
+```{r Leaflet, echo=TRUE}
 library(leaflet)
-## Warning: package 'leaflet' was built under R version 3.4.2
-my_map <- data %>%
-        leaflet() %>%
-        addTiles() %>%
-        setView(lng = -85, lat = 40, zoom = 5) %>%
-
-        addMarkers(popup = "Test", 
-                   lng = data$Lat, 
-                   lat = data$Long)%>% 
-        addCircles(weight=1,radius=sqrt(data$HomicieRate)*30000)
-
-my_map
-
-https://github.com/wuyue0915/R-Markdown-project/blob/main/Picture1.png
+df %>%
+  leaflet() %>%
+  addTiles() %>%
+  addMarkers(clusterOptions = markerClusterOptions())
